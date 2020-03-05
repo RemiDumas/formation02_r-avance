@@ -14,6 +14,7 @@ install_and_load(c("tidyverse", "forcats", "extrafont", "formattable", "xtable",
 # setwd(cur_dir)
 # rm(foo)
 # getwd()
+data
 getwd()
 
 load("Diaporama/data/zonages.Rda")
