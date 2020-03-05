@@ -8,12 +8,12 @@ install_and_load <- function(P) {
 install_and_load(c("tidyverse", "forcats", "extrafont", "formattable", "xtable", "knitr", "ggrepel",
                    "writexl"))
 
-cur_path <- rstudioapi::getSourceEditorContext()$path
-foo <- str_split(cur_path, "/")
-cur_dir <- str_sub(cur_path, 1, str_locate(cur_path,last(foo[[1]]))-2)
-setwd(cur_dir)
-rm(foo)
-getwd()
+# cur_path <- rstudioapi::getSourceEditorContext()$path
+# foo <- str_split(cur_path, "/")
+# cur_dir <- str_sub(cur_path, 1, str_locate(cur_path,last(foo[[1]]))-2)
+# setwd(cur_dir)
+# rm(foo)
+# getwd()
 load("Diaporama/data/zonages.Rda")
 data <- read.csv2("Diaporama/data/valeurs_trimestrielles.csv", encoding = "UTF-8", stringsAsFactors = F)
 
