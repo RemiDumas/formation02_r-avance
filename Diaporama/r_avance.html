@@ -1,0 +1,2635 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+  <head>
+    <title>R Avancé</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Rémi Dumas" />
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/rutgers.css" rel="stylesheet" />
+    <link href="libs/remark-css/rutgers-fonts.css" rel="stylesheet" />
+    <script src="libs/kePrint/kePrint.js"></script>
+    <script src="libs/htmlwidgets/htmlwidgets.js"></script>
+    <script src="libs/jquery/jquery.min.js"></script>
+    <link href="libs/leaflet/leaflet.css" rel="stylesheet" />
+    <script src="libs/leaflet/leaflet.js"></script>
+    <link href="libs/leafletfix/leafletfix.css" rel="stylesheet" />
+    <script src="libs/Proj4Leaflet/proj4-compressed.js"></script>
+    <script src="libs/Proj4Leaflet/proj4leaflet.js"></script>
+    <link href="libs/rstudio_leaflet/rstudio_leaflet.css" rel="stylesheet" />
+    <script src="libs/leaflet-binding/leaflet.js"></script>
+    <link href="libs/datatables-css/datatables-crosstalk.css" rel="stylesheet" />
+    <script src="libs/datatables-binding/datatables.js"></script>
+    <link href="libs/dt-core/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="libs/dt-core/css/jquery.dataTables.extra.css" rel="stylesheet" />
+    <script src="libs/dt-core/js/jquery.dataTables.min.js"></script>
+    <link href="libs/crosstalk/css/crosstalk.css" rel="stylesheet" />
+    <script src="libs/crosstalk/js/crosstalk.min.js"></script>
+    <link rel="stylesheet" href="my-theme.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# R Avancé
+## ⚔<br/>de la donnée rangée à sa visualisation
+### Rémi Dumas
+### Insee - Établissement de Bordeaux
+### 2019/12/12 (updated: 2020-03-03)
+
+---
+
+class: justify, inverse
+
+# Les données ordonnées
+
+.left-column[![Hadley Wickham](images/hadley-wickham.jpg)]
+
+
+
+**Hadley Wickham** est *Chief Scientist* à **RStudio** et professeur adjoint de statistiques à l’Université d’*Auckland*. Tout au long de sa carrière, il s'est heurté à des datasets désordonnés. Ainsi, en 2014, il publie « Tidy Data », article de référence qui établit clairement ce qu’est un jeu de données « propre ».
+
+un jeu de données est propre quand :
+.right-column[![Données brute-rangées](images/tame_tidy.png)]
+* **chaque variable se trouve dans une colonne**
+* **chaque observation compose une ligne**
+* **les éléments sont contenus dans le même dataset**
+
+
+---
+class: inverse, center, middle
+
+# Par exemple
+
+---
+class: left
+# Un tableau sur Insee.fr
+
+&lt;table class="table table-striped table-hover" style="font-size: 16px; margin-left: auto; margin-right: auto;"&gt;
+&lt;caption style="font-size: initial !important;"&gt;Taux de chomage localisé des départements de Nouvelle-Aquitaine (en %)&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Code &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Libellé &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; T3_2018 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; T2_2019 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; T3_2019 &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 16 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; CHARENTE &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.2 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 17 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; CHARENTE-MARITIME &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 9.3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.8 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 19 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; CORREZE &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6.7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6.9 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 23 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; CREUSE &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.0 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 24 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; DORDOGNE &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 9.3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.8 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 33 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; GIRONDE &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.2 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 40 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; LANDES &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.4 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 47 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; LOT-ET-GARONNE &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 9.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.8 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 64 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; PYRENEES-ATLANTIQUES &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.2 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 79 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; DEUX-SEVRES &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6.7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6.2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6.3 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 86 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; VIENNE &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6.7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6.9 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 87 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; HAUTE-VIENNE &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.9 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+.footnote[
+  [1] Source: Insee, chômage au sens du BIT
+  
+  [2] Les données du dernier trimestre sont provisoires
+  ]
+
+
+---
+class: left
+# Traiter les données des tableaux
+
+Comment calculer les évolutions trimestrielles et/ou annuelles pour un tableau, un graphique, une carte ...
+
+
+```r
+tx_chom_75 %&gt;% 
+  mutate(
+    'Evolution trimestrielle' = round(100 * (T3_2019/T2_2019 - 1) , 1)
+    )
+```
+
+&lt;table class="table table-striped table-hover" style="font-size: 12px; margin-left: auto; margin-right: auto;"&gt;
+&lt;caption style="font-size: initial !important;"&gt;Taux de chomage localisé des départements de Nouvelle-Aquitaine (en %)&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Code &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Libellé &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; T3_2018 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; T2_2019 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; T3_2019 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Evolution trimestrielle &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 16 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; CHARENTE &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.2 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 17 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; CHARENTE-MARITIME &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 9.3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.3 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 19 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; CORREZE &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6.7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6.9 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.0 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 23 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; CREUSE &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 24 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; DORDOGNE &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 9.3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.1 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 33 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; GIRONDE &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.2 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 40 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; LANDES &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.4 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 47 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; LOT-ET-GARONNE &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 9.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.1 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 64 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; PYRENEES-ATLANTIQUES &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.9 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 79 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; DEUX-SEVRES &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6.7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6.2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6.3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.6 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 86 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; VIENNE &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6.7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6.9 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.0 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 87 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; HAUTE-VIENNE &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.9 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.3 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+Problème: Lorsque les colonnes changeront, il faudra réecrire la formule de calcul.
+
+
+
+---
+class: inverse, center, middle
+# Pré-requis
+###Importer et traiter les données
+![Le cycle des données](images/data_cycle.png)
+
+
+
+---
+class: left
+# Charger des données
+
+
+### au format R natif
+- format RDS (un seul objet)
+
+```r
+readRDS("my_data.rds")
+```
+--
+- format RData (plusieurs objets)
+
+```r
+load("my_data.RData")
+```
+
+--
+### import de fichiers SAS
+- le package **haven**
+
+```r
+data &lt;- read_sas("my_data.sas7bdat")
+```
+
+--
+### import de fichiers csv
+- le package **readr**
+
+```r
+data &lt;- read_csv2("my_data.csv")
+```
+
+
+---
+class: left
+# Charger des données(2)
+
+### import de fichiers ods
+- le package **readODS**
+
+```r
+data &lt;- read_ods("my_data.ods")
+```
+
+--
+### import de fichiers xls
+- le package **readxl**
+
+```r
+data &lt;- read_xls("my_data.xls")
+```
+--
+- le package **xlsx**
+
+```r
+data &lt;- read.xlsx("my_data.xlsx")
+```
+
+
+
+---
+class: left
+# Exporter des données vers un fichier
+
+
+### au format R natif
+- format RDS (un seul objet)
+
+```r
+saveRDS(my_data, file = "my_data.rds")
+```
+--
+- format RData (plusieurs objets)
+
+```r
+save(data1, data2, "my_data.RData")
+save.image("my_data.RData") ## sauve tout l'environnement de travail
+```
+
+--
+### export de fichiers SAS
+- le package **haven**
+
+```r
+write_sas(data, path = "my_data.sas7bdat")
+```
+
+
+
+---
+class: left
+# Exporter des données vers un fichier(2)
+
+--
+### export de fichiers csv
+- le package **readr**
+
+```r
+write_csv2(data, path = "my_data.csv")
+```
+--
+### export de fichiers ods
+- le package **readODS**
+
+```r
+write_ods(data, "my_data.ods")
+```
+--
+### export de fichiers xls
+- le package **xlsx**
+
+```r
+write.xlsx2(data, file = "my_data.xlsx")
+```
+
+
+---
+class: left
+# Les variables
+
+### Les types
+
+- **Numérique**: *0, -1, 3.4, 6.789456*
+- **Booléen**: *TRUE, FALSE* ou *T,F*
+- **Caractère**: *"anticonstitutionnellment"*
+- **Date**: *2008-12-25*
+
+
+```r
+class(pi)
+```
+
+```
+## [1] "numeric"
+```
+
+--
+### L'opérateur d'assignation &lt;- ( raccourci: *Alt + 6* )
+
+```r
+a &lt;- pi
+b &lt;- "vaut environ 3,14"
+c &lt;- Sys.Date()
+a 
+```
+
+```
+## [1] 3.141593
+```
+
+```r
+b
+```
+
+```
+## [1] "vaut environ 3,14"
+```
+
+```r
+c
+```
+
+```
+## [1] "2020-03-03"
+```
+
+
+
+---
+class: left
+# Les variables numériques
+
+### Les opérations arithmétiques 
+** +  , -  , \*  ,  /  , ^  , %% ,  %/% **
+### Les fonctions mathématiques
+** sin ,  cos  , tan  , log ,  sqrt** etc ...
+### Les fonctions statistiques
+** mean , median  , quantile  , sum  , min  , max ** etc ...
+
+### Les opérateurs logiques
+- ** &lt; , &lt;= , &gt; , =&gt; , == , != **
+- ** | ** (OU) 
+- ** &amp; ** (ET)
+- ** isTRUE() , is.numeric() , is.logical() , is.character() , is.Date() , is.null() , is.na() **
+
+---
+class: left
+# Les chaines de caractères
+
+### La concaténation 
+** paste() ** et ** paste0() **
+
+```r
+a &lt;- "Insee"
+b &lt;- "Mesurer pour comprendre "
+paste(a, "-", b)
+```
+
+```
+## [1] "Insee - Mesurer pour comprendre "
+```
+
+```r
+paste0(a, "2025")
+```
+
+```
+## [1] "Insee2025"
+```
+
+### Le package *stringr*
+
+.right-column[![tidyR hex](images/schema_stringr.png)]
+
+```r
+str_trim(b)
+```
+
+```
+## [1] "Mesurer pour comprendre"
+```
+
+```r
+str_sub(a,1,3)
+```
+
+```
+## [1] "Ins"
+```
+
+```r
+str_replace_all(b , "e", "_")
+```
+
+```
+## [1] "M_sur_r pour compr_ndr_ "
+```
+
+```r
+str_split(b , " ")
+```
+
+```
+## [[1]]
+## [1] "Mesurer"    "pour"       "comprendre" ""
+```
+
+
+
+.footnote[(http://perso.ens-lyon.fr/lise.vaudor/Descriptoire/_book/manipuler-des-strings-package-stringr.html)]
+
+
+---
+class: left
+# Les vecteurs
+
+### La fonction collecteur: *c()*
+
+```r
+vec_num &lt;- c(122,154,132,141,147,112)
+vec_num*1.5
+```
+
+```
+## [1] 183.0 231.0 198.0 211.5 220.5 168.0
+```
+
+```r
+vec_ch &lt;- c("Pierre", "Paul", "Jean", "Jacques", "Magali")
+vec_ch2 &lt;- c(vec_ch, "Nathalie")
+
+mean(vec_num) # taille moyenne des élements du vec_num
+```
+
+```
+## [1] 134.6667
+```
+
+```r
+vec_num2 &lt;- c(vec_num, "John")
+class(vec_num)
+```
+
+```
+## [1] "numeric"
+```
+
+```r
+paste(vec_ch2,"mesure",vec_num,"cm")[1:3]
+```
+
+```
+## [1] "Pierre mesure 122 cm" "Paul mesure 154 cm"   "Jean mesure 132 cm"
+```
+
+
+---
+class: left
+# Les dataframes
+
+### Créer un dataframe: la fonction *data.frame()*
+
+```r
+df &lt;- data.frame(
+  nom = c("Lambert", "Doussain", "Niang", "Gérard", "Laporte", "Herrand"),
+  ville = c("Bordeaux", "Marseille", "Paris", "Bordeaux", "Paris", "Paris"),
+  conjoint1 = c(1200, 1180, 1750, 2100, 1350, 1100),
+  conjoint2 = c(1450, 1870, 1690, NA, 2350, NA),
+  nb_personnes = c(4, 2, 3, 2, 5, 1),
+  stringsAsFactors = F # pour ne pas avoir de facteurs 
+)
+df
+```
+
+```
+##        nom     ville conjoint1 conjoint2 nb_personnes
+## 1  Lambert  Bordeaux      1200      1450            4
+## 2 Doussain Marseille      1180      1870            2
+## 3    Niang     Paris      1750      1690            3
+## 4   Gérard  Bordeaux      2100        NA            2
+## 5  Laporte     Paris      1350      2350            5
+## 6  Herrand     Paris      1100        NA            1
+```
+---
+class: left
+# Les dataframes(2)
+
+### Extraire des lignes, extraire des colonnes
+
+```r
+df[1,2] # ligne 1, colonne 2
+```
+
+```
+## [1] "Bordeaux"
+```
+
+```r
+df[3,] # ligne 3 , toutes les colonnes
+```
+
+```
+##     nom ville conjoint1 conjoint2 nb_personnes
+## 3 Niang Paris      1750      1690            3
+```
+
+```r
+df[,1] # toutes les lignes, 1ère colonne
+```
+
+```
+## [1] "Lambert"  "Doussain" "Niang"    "Gérard"   "Laporte"  "Herrand"
+```
+
+```r
+df$nom #identique au précédent
+```
+
+```
+## [1] "Lambert"  "Doussain" "Niang"    "Gérard"   "Laporte"  "Herrand"
+```
+
+### Le pipe **%&gt;%** (raccourci: Ctrl + Alt + M)
+Enchaine les opérations de la gauche vers la droite
+
+```r
+df$conjoint1 %&gt;% mean
+```
+
+```
+## [1] 1446.667
+```
+### Les modalités d'une variable: la fonction *unique*
+
+
+```r
+df$ville %&gt;% unique
+```
+
+```
+## [1] "Bordeaux"  "Marseille" "Paris"
+```
+
+---
+class: left
+# Traiter les données avec *dplyr*
+
+![Les verbes dplyr](images/dplyr.jpg)
+
+.footnote[(https://audhalbritter.com/my-top-8-dplyr-functions/)]
+
+Les verbes de dplyr: **summarize**, **slice**, **rename**, **select**, **arrange**, **mutate**, **group_by**
+
+
+---
+class: left
+# *dplyr* : statistiques avec **summarise**
+
+
+```r
+df %&gt;% summarise(
+  'Nombre de ménages' = n(),
+  'Revenu moyen du 1er conjoint' = mean(conjoint1)
+  )
+```
+
+```
+##   Nombre de ménages Revenu moyen du 1er conjoint
+## 1                 6                     1446.667
+```
+
+
+---
+class: left
+# *dplyr* : découper les données avec **slice** et **sample_n**
+
+
+```r
+df %&gt;% slice(1:3) # découpe les enregistrements de 1 à 3
+```
+
+```
+##        nom     ville conjoint1 conjoint2 nb_personnes
+## 1  Lambert  Bordeaux      1200      1450            4
+## 2 Doussain Marseille      1180      1870            2
+## 3    Niang     Paris      1750      1690            3
+```
+
+```r
+df %&gt;% sample_n(2) # découpe 2 enregistrements au hasard
+```
+
+```
+##        nom     ville conjoint1 conjoint2 nb_personnes
+## 1 Doussain Marseille      1180      1870            2
+## 2  Laporte     Paris      1350      2350            5
+```
+
+```r
+df %&gt;% sample_frac(0.25) # découpe 25% des données
+```
+
+```
+##       nom    ville conjoint1 conjoint2 nb_personnes
+## 1  Gérard Bordeaux      2100        NA            2
+## 2 Herrand    Paris      1100        NA            1
+```
+
+
+---
+class: left
+# *dplyr* : renommer des variables **rename**
+
+- **rename** renomme des variables
+
+```r
+df %&gt;% rename(origine = ville) # renomme la variable ville en origine
+```
+
+```
+##        nom   origine conjoint1 conjoint2 nb_personnes
+## 1  Lambert  Bordeaux      1200      1450            4
+## 2 Doussain Marseille      1180      1870            2
+## 3    Niang     Paris      1750      1690            3
+## 4   Gérard  Bordeaux      2100        NA            2
+## 5  Laporte     Paris      1350      2350            5
+## 6  Herrand     Paris      1100        NA            1
+```
+
+
+
+---
+class: left
+# *dplyr* : selectionner des variables **select**
+
+- **select** selectionne et/ou réorganise et/ou renomme les variables
+
+```r
+df %&gt;% select(c(3,5)) # les 3ème et 5ème variables
+```
+
+```
+##   conjoint1 nb_personnes
+## 1      1200            4
+## 2      1180            2
+## 3      1750            3
+## 4      2100            2
+## 5      1350            5
+## 6      1100            1
+```
+
+```r
+df %&gt;% select(origine = ville) # la variable ville sera renommée
+```
+
+```
+##     origine
+## 1  Bordeaux
+## 2 Marseille
+## 3     Paris
+## 4  Bordeaux
+## 5     Paris
+## 6     Paris
+```
+
+
+
+---
+class: left
+# *dplyr* : selectionner des variables **select** (2)
+
+- **select** selectionne et/ou réorganise et/ou renomme les variables
+
+```r
+df %&gt;% select(starts_with("conjoint")) # commencent par "conjoint"
+```
+
+```
+##   conjoint1 conjoint2
+## 1      1200      1450
+## 2      1180      1870
+## 3      1750      1690
+## 4      2100        NA
+## 5      1350      2350
+## 6      1100        NA
+```
+
+```r
+df %&gt;% select(origine = ville, nom, nb_personnes, everything())
+```
+
+```
+##     origine      nom nb_personnes conjoint1 conjoint2
+## 1  Bordeaux  Lambert            4      1200      1450
+## 2 Marseille Doussain            2      1180      1870
+## 3     Paris    Niang            3      1750      1690
+## 4  Bordeaux   Gérard            2      2100        NA
+## 5     Paris  Laporte            5      1350      2350
+## 6     Paris  Herrand            1      1100        NA
+```
+
+
+
+---
+class: left
+# *dplyr* : trier les données avec **arrange**
+
+
+```r
+df %&gt;% arrange(conjoint1) # tri selon conjoint1
+```
+
+```
+##        nom     ville conjoint1 conjoint2 nb_personnes
+## 1  Herrand     Paris      1100        NA            1
+## 2 Doussain Marseille      1180      1870            2
+## 3  Lambert  Bordeaux      1200      1450            4
+## 4  Laporte     Paris      1350      2350            5
+## 5    Niang     Paris      1750      1690            3
+## 6   Gérard  Bordeaux      2100        NA            2
+```
+
+```r
+df %&gt;% arrange(desc(nb_personnes)) # tri décroissant
+```
+
+```
+##        nom     ville conjoint1 conjoint2 nb_personnes
+## 1  Laporte     Paris      1350      2350            5
+## 2  Lambert  Bordeaux      1200      1450            4
+## 3    Niang     Paris      1750      1690            3
+## 4 Doussain Marseille      1180      1870            2
+## 5   Gérard  Bordeaux      2100        NA            2
+## 6  Herrand     Paris      1100        NA            1
+```
+
+
+
+---
+class: left
+# *dplyr* : créer des colonnes avec **mutate**
+
+
+```r
+df %&gt;% mutate(revenu = conjoint1 + conjoint2) # opération
+```
+
+```
+##        nom     ville conjoint1 conjoint2 nb_personnes revenu
+## 1  Lambert  Bordeaux      1200      1450            4   2650
+## 2 Doussain Marseille      1180      1870            2   3050
+## 3    Niang     Paris      1750      1690            3   3440
+## 4   Gérard  Bordeaux      2100        NA            2     NA
+## 5  Laporte     Paris      1350      2350            5   3700
+## 6  Herrand     Paris      1100        NA            1     NA
+```
+
+```r
+df %&gt;% mutate(
+  conjoint2 = if_else(is.na(conjoint2), 0, conjoint2),
+  revenu_par_personne = (conjoint1 + conjoint2) / nb_personnes
+  )
+```
+
+```
+##        nom     ville conjoint1 conjoint2 nb_personnes revenu_par_personne
+## 1  Lambert  Bordeaux      1200      1450            4             662.500
+## 2 Doussain Marseille      1180      1870            2            1525.000
+## 3    Niang     Paris      1750      1690            3            1146.667
+## 4   Gérard  Bordeaux      2100         0            2            1050.000
+## 5  Laporte     Paris      1350      2350            5             740.000
+## 6  Herrand     Paris      1100         0            1            1100.000
+```
+
+
+
+---
+class: left
+# *dplyr* : calculs en ligne avec *rowwise()*
+
+
+```r
+df %&gt;% mutate(
+  revenu_par_personne = sum(conjoint1, conjoint2, na.rm = T) / nb_personnes
+  ) # calcule la somme de la colonne
+```
+
+```
+##        nom     ville conjoint1 conjoint2 nb_personnes revenu_par_personne
+## 1  Lambert  Bordeaux      1200      1450            4            4010.000
+## 2 Doussain Marseille      1180      1870            2            8020.000
+## 3    Niang     Paris      1750      1690            3            5346.667
+## 4   Gérard  Bordeaux      2100        NA            2            8020.000
+## 5  Laporte     Paris      1350      2350            5            3208.000
+## 6  Herrand     Paris      1100        NA            1           16040.000
+```
+
+```r
+df %&gt;% rowwise() %&gt;% mutate(
+  revenu_par_personne = sum(conjoint1, conjoint2, na.rm = T) / nb_personnes
+  ) # la somme ne se fait que pour la ligne courante
+```
+
+```
+## Source: local data frame [6 x 6]
+## Groups: &lt;by row&gt;
+## 
+## # A tibble: 6 x 6
+##   nom      ville     conjoint1 conjoint2 nb_personnes revenu_par_personne
+##   &lt;chr&gt;    &lt;chr&gt;         &lt;dbl&gt;     &lt;dbl&gt;        &lt;dbl&gt;               &lt;dbl&gt;
+## 1 Lambert  Bordeaux       1200      1450            4                662.
+## 2 Doussain Marseille      1180      1870            2               1525 
+## 3 Niang    Paris          1750      1690            3               1147.
+## 4 Gérard   Bordeaux       2100        NA            2               1050 
+## 5 Laporte  Paris          1350      2350            5                740 
+## 6 Herrand  Paris          1100        NA            1               1100
+```
+
+
+
+---
+class: left
+# *dplyr* : statistiques par modalités avec *group_by*
+
+
+```r
+df %&gt;% rowwise() %&gt;% 
+  mutate(total = sum(conjoint1, conjoint2, na.rm = T)) %&gt;% 
+  ungroup %&gt;% # pour "oublier" le comptage par ligne
+  group_by(ville) %&gt;%  
+  summarise(`Nombre de ménages` = n(),
+            `Revenu moyen` = mean(total),
+            `Nombre de personnes` = sum(nb_personnes),
+            `Taille moyenne` = `Nombre de personnes`/`Nombre de ménages`
+            )
+```
+
+```
+## # A tibble: 3 x 5
+##   ville     `Nombre de ménages` `Revenu moyen` `Nombre de personnes` `Taille moyenne`
+##   &lt;chr&gt;                   &lt;int&gt;          &lt;dbl&gt;                 &lt;dbl&gt;            &lt;dbl&gt;
+## 1 Bordeaux                    2          2375                      6                3
+## 2 Marseille                   1          3050                      2                2
+## 3 Paris                       3          2747.                     9                3
+```
+
+
+
+
+---
+class: left
+# *dplyr* : Selection de lignes
+
+.left-column[![selections de lignes](images/set_op.png)]
+
+```r
+a &lt;- df %&gt;% select(nom,ville)
+b &lt;- data.frame(
+  nom = c("Gérard", "N'Guyen", "Lambert", 
+          "Dupont", "Niang"),
+  ville = c("Bordeaux", "Marseille", "Paris", 
+            "Bordeaux", "Paris"),
+  stringsAsFactors = F
+)
+```
+
+.right-column[
+### union()
+
+```r
+union(a,b)
+```
+
+```
+##        nom     ville
+## 1  Lambert  Bordeaux
+## 2 Doussain Marseille
+## 3    Niang     Paris
+## 4   Gérard  Bordeaux
+## 5  Laporte     Paris
+## 6  Herrand     Paris
+## 7  N'Guyen Marseille
+## 8  Lambert     Paris
+## 9   Dupont  Bordeaux
+```
+]
+
+### intersect()
+
+```r
+intersect(a,b)
+```
+
+```
+##      nom    ville
+## 1  Niang    Paris
+## 2 Gérard Bordeaux
+```
+
+### setdiff()
+
+```r
+setdiff(a,b)
+```
+
+```
+##        nom     ville
+## 1  Lambert  Bordeaux
+## 2 Doussain Marseille
+## 3  Laporte     Paris
+## 4  Herrand     Paris
+```
+
+
+---
+class: left
+# *dplyr* : Concaténation
+
+.left-column[![concatenation](images/concat.png)]
+
+```r
+c &lt;- data.frame(
+  age = c(25, 45, 51, 18, 33, 40)
+  )
+```
+
+&lt;/br&gt;&lt;/br&gt;
+
+
+.right-column[
+### bind_cols()
+
+```r
+bind_cols(a,c)
+```
+
+```
+##        nom     ville age
+## 1  Lambert  Bordeaux  25
+## 2 Doussain Marseille  45
+## 3    Niang     Paris  51
+## 4   Gérard  Bordeaux  18
+## 5  Laporte     Paris  33
+## 6  Herrand     Paris  40
+```
+]
+
+### bind_rows()
+
+
+```r
+bind_rows(a,b)
+```
+
+```
+##         nom     ville
+## 1   Lambert  Bordeaux
+## 2  Doussain Marseille
+## 3     Niang     Paris
+## 4    Gérard  Bordeaux
+## 5   Laporte     Paris
+## 6   Herrand     Paris
+## 7    Gérard  Bordeaux
+## 8   N'Guyen Marseille
+## 9   Lambert     Paris
+## 10   Dupont  Bordeaux
+## 11    Niang     Paris
+```
+
+---
+class: left
+# *dplyr* : Jointures
+.right-column[![jointures](images/join.png)]
+
+### left_join()
+Enrichit la table de gauche avec de nouvelles colonnes
+### right_join()
+Enrichit la table de droite avec de nouvelles colonnes
+### inner_join()
+Joint toutes les colonnes des lignes communes aux deux tables
+### full_join()
+Joint toutes les colonnes
+### semi_join()
+Les lignes de la table de gauche présentes dans celle de droite
+### anti_join()
+Les lignes de la table de gauche qui ne sont pas présentes dans celle de droite
+
+
+---
+class: inverse, center, middle
+# Ranger un jeu de données 
+
+### [taɪdi]
+
+![tidyR hex](images/tidyrHex.jpg)
+![Données rangées](images/tidyr_functions.png)
+
+---
+class: left
+# Rendre les données exploitables
+.left-column[![data-cleaning](images/data-cleaning.png)]
+Les extensions du **tidyverse** comme *dplyr* ou *ggplot2* utilisent des données “rangées”, appelées *tidy data*.
+Prenons un exemple avec les données suivantes, qui indique la population de trois pays pour quatre années différentes : 
+### Les données non brutes
+&lt;table class="table" style="font-size: 12px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; country &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; 1992 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; 1997 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; 2002 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; 2007 &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Belgium &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10045622 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10199787 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10311970 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10392226 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; France &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 57374179 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 58623428 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 59925035 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 61083916 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Germany &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 80597764 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 82011073 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 82350671 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 82400996 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+Les années sont en colonne, ce qui signifie que chaque année est un "indicateur" (une variable). Or, pour représenter une variable, il faut qu'elle soit relative à des "modalités", chaque pays représentant une "série" (une courbe différente). 
+
+---
+class: left
+# Utilisation des deux types de tableaux
+.right-column[![tidy](images/tame_tidy.png)]
+Les deux exemples de données brutes ci-contre démontrent l'utilité d'avoir un jeu "rangé". 
+Ce qui ne convient pas:
+- les colonnes du premier jeu comprennent deux informations: l'épice utilisé et l'ordre d'utilisation
+- les deux tableaux correspondent aux mêmes données et sont transposables
+- il sera plus difficile de faire des comptages, des modélisations ou des représentations graphiques avec un tableau de contingence qu'avec un tableau de données ordonnées et rangées.
+
+---
+class: left
+# Rassembler les colonnes: *gather*
+
+### Syntaxe
+.right-column[![gather](images/gather.jpg)]Le verbe **gather** va transformer les colonnes qui contiennent ces valeurs en lignes selon le schéma vu à la diapo précédente. 
+
+La syntaxe est la suivante:
+
+&lt;/br&gt;
+
+
+```r
+gather(data, key = variable, value = valeur, -id)
+```
+
+ou avec le pipe %&gt;%:
+
+
+```r
+data %&gt;% gather(key = variable, value = valeur, -id)
+```
+
+- *data* est le jeu de données à ordonner
+- *variables* sera le nom de la colonne qui rassemblera les variables
+- *valeurs* sera le nom de la colonne qui rassemblera les valeurs
+
+&gt; Attention: Le verbe *gather* est remplacé par *pivot_longer*. La syntaxe est `pivot_longer(data, liste_de_colonnes, names_to , values_to)`
+---
+class: left
+# Exemple d'utilisation de *gather*
+
+Le tableau suivant contient les valeurs des populations et des espérances de vie pour 2002 et 2007. En voici les 10 premières lignes: 
+
+&lt;table class="table" style="font-size: 12px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; country &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; continent &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; pop_2002 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; pop_2007 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; lifeExp_2002 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; lifeExp_2007 &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Afghanistan &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Asia &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 25268405 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 31889923 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 42.129 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 43.828 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Albania &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Europe &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3508512 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3600523 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 75.651 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 76.423 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Algeria &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Africa &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 31287142 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 33333216 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 70.994 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 72.301 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Angola &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Africa &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10866106 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 12420476 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 41.003 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 42.731 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Argentina &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Americas &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 38331121 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 40301927 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 74.340 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 75.320 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Australia &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Oceania &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 19546792 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20434176 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 80.370 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 81.235 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Austria &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Europe &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8148312 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8199783 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 78.980 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 79.829 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Bahrain &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Asia &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 656397 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 708573 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 74.795 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 75.635 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Bangladesh &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Asia &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 135656790 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 150448339 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 62.013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 64.062 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Belgium &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Europe &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10311970 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10392226 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 78.320 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 79.441 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+Nous allons rassembler les colonnes pop_2002, pop_2007, lifeExp_2002, lifeExp_2007:
+
+
+```r
+gather(gapmind_messy, key = variables, value = valeur, -c(country, continent))
+```
+
+```
+## # A tibble: 6 x 4
+##   country     continent variables        valeur
+##   &lt;chr&gt;       &lt;chr&gt;     &lt;chr&gt;             &lt;dbl&gt;
+## 1 Liberia     Africa    lifeExp_2007       45.7
+## 2 Singapore   Asia      lifeExp_2007       80.0
+## 3 Taiwan      Asia      pop_2007     23174294  
+## 4 Congo, Rep. Africa    pop_2007      3800610  
+## 5 Namibia     Africa    lifeExp_2002       51.5
+## 6 Israel      Asia      lifeExp_2007       80.7
+```
+
+
+
+---
+class: left
+# Conséquence d'un *gather* sur les dimensions du jeu de données
+### Le jeu de données avant *gather*
+
+```
+## Classes 'tbl_df', 'tbl' and 'data.frame':	142 obs. of  6 variables:
+##  $ country     : chr  "Afghanistan" "Albania" "Algeria" "Angola" ...
+##  $ continent   : chr  "Asia" "Europe" "Africa" "Africa" ...
+##  $ pop_2002    : int  25268405 3508512 31287142 10866106 38331121 19546792 8148312 656397 135656790 10311970 ...
+##  $ pop_2007    : int  31889923 3600523 33333216 12420476 40301927 20434176 8199783 708573 150448339 10392226 ...
+##  $ lifeExp_2002: num  42.1 75.7 71 41 74.3 ...
+##  $ lifeExp_2007: num  43.8 76.4 72.3 42.7 75.3 ...
+```
+### Le jeu de données après *gather*
+
+```
+## Classes 'tbl_df', 'tbl' and 'data.frame':	568 obs. of  4 variables:
+##  $ country  : chr  "Afghanistan" "Albania" "Algeria" "Angola" ...
+##  $ continent: chr  "Asia" "Europe" "Africa" "Africa" ...
+##  $ variables: chr  "pop_2002" "pop_2002" "pop_2002" "pop_2002" ...
+##  $ valeur   : num  25268405 3508512 31287142 10866106 38331121 ...
+```
+
+On remarque que le nombre de lignes est passé de 142 à 568. En effet, 4 colonnes ont été rassemblées, soit une multiplication par quatre du nombre de lignes.
+
+---
+class: left
+# Séparer une colonne: *separate*
+### Syntaxe
+.right-column[![separate](images/separate.png)]Le verbe **separate** va retrouver les informations multiples contenues dans une colonne et les répartir dans des colonnes différentes. 
+
+La syntaxe est la suivante:
+
+&lt;/br&gt;&lt;/br&gt;
+
+
+```r
+separate(data, col = colonne, into = c("col1", "col2"), se = "chaine")
+```
+
+
+- *data* est le jeu de données 
+- *colonne* est le nom de la colonne qui contient les informations
+- *into* est le nom des colonnes qui contiendront les informations separées
+- *separate* est la chaine de caractère qui sépare les informations dans *colonne*
+
+
+---
+class: left
+# Exemple d'utilisation de *separate*
+
+### Exemple
+Dans le tableau précédent, la colonne *variables* contient deux informations: la variable et l'année. On va séparer cette colonne en deux, une colonne *variable* et une colonne *annee*.
+
+
+```r
+separate(gapmind, col = variables, into = c("variable", "annee"), sep = "_")
+```
+&lt;table class="table table-striped table-hover table-condensed" style="font-size: 10px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; country &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; continent &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; variable &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; annee &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; valeur &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Bulgaria &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Europe &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; lifeExp &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 2002 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 72.140 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; France &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Europe &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; pop &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 2007 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 61083916.000 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Turkey &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Europe &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; pop &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 2002 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 67308928.000 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Sao Tome and Principe &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Africa &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; pop &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 2002 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 170372.000 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; El Salvador &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Americas &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; pop &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 2007 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6939688.000 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Croatia &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Europe &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; pop &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 2002 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4481020.000 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Israel &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Asia &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; pop &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 2002 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6029529.000 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Colombia &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Americas &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; lifeExp &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 2007 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 72.889 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+class: left
+# Le verbe **extract**
+**extract** permet de créer de nouvelles colonnes à partir de sous-chaînes d’une colonne de texte existante, identifiées par des groupes dans une expression régulière.
+
+
+```r
+df &lt;- data.frame(
+  eleve = c("Félicien Machin", "Raymonde Bidule", "Martial Truc"),
+  note = c("5/20", "6/10", "87/100"),
+  stringsAsFactors = FALSE)
+
+df %&gt;% extract(eleve,
+               c("initiale_prenom", "initiale_nom"),
+               "^(.).* (.).*$",
+               remove = FALSE)
+```
+
+```
+##             eleve initiale_prenom initiale_nom   note
+## 1 Félicien Machin               F            M   5/20
+## 2 Raymonde Bidule               R            B   6/10
+## 3    Martial Truc               M            T 87/100
+```
+
+
+
+---
+class: left
+# Regrouper plusieurs colonnes: *unite*
+### Syntaxe
+
+```r
+unite(data, col_a_creer, col_a_regrouper, separateur)
+```
+
+### Exemple
+Soit le tableau suivant:
+
+```
+##   dep codcom                  libcom
+## 1  01    001 L'Abergement-Clémenciat
+## 2  01    002   L'Abergement-de-Varey
+## 3  01    004       Ambérieu-en-Bugey
+## 4  01    005     Ambérieux-en-Dombes
+## 5  01    006                 Ambléon
+## 6  01    007                Ambronay
+```
+Regroupons les colonnes *dep* et *codcom* en une seule colonne, *codgeo*:
+
+```r
+listecom %&gt;% unite(codgeo, dep, codcom, sep="") %&gt;% head(6)
+```
+
+```
+##   codgeo                  libcom
+## 1  01001 L'Abergement-Clémenciat
+## 2  01002   L'Abergement-de-Varey
+## 3  01004       Ambérieu-en-Bugey
+## 4  01005     Ambérieux-en-Dombes
+## 5  01006                 Ambléon
+## 6  01007                Ambronay
+```
+
+---
+class: left
+# Completer un jeu de données: *complete*
+### Syntaxe
+
+```r
+complete(data, col_a_combiner, fill = liste_valeurs)
+```
+
+### Exemple
+Quatre personnes ont visité des villes d'Italie et leur ont attribué une note.
+
+&lt;table class="table table-striped table-hover table-condensed" style="font-size: 8px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Nom &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Ville &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Pays &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Note &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Pierre &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Venise &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Italie &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Vanessa &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Venise &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Italie &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Louis &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Venise &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Italie &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Anaïs &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Venise &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Italie &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Pierre &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Rome &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Italie &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Louis &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Rome &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Italie &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Anaïs &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Rome &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Italie &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Pierre &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Naples &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Italie &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Vanessa &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Naples &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Italie &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Louis &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Naples &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Italie &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+Il manque deux combinaisons Nom, Ville. Le verbe **complete** va créer les enregistrements avec les valeurs *Italie* et *NA* pour les champs Pays et Note.
+
+
+```r
+complete(data, Nom, Ville, fill = list(Pays = "Italie", Note = NA))
+```
+
+&lt;table class="table table-striped table-hover table-condensed" style="font-size: 8px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Nom &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Ville &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Pays &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Note &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Anaïs &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Naples &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Italie &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; NA &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Anaïs &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Rome &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Italie &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Anaïs &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Venise &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Italie &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Louis &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Naples &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Italie &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Louis &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Rome &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Italie &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Louis &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Venise &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Italie &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Pierre &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Naples &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Italie &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Pierre &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Rome &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Italie &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Pierre &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Venise &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Italie &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Vanessa &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Naples &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Italie &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Vanessa &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Rome &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Italie &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; NA &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Vanessa &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Venise &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Italie &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+
+---
+class: left
+# Réaliser un tableau: *spread*
+.right-column[![spread](images/spread.jpg)]
+Le verbe **spread** fait le contraire de **gather** à savoir répartir les modalités d'une variable et leurs valeurs comme nouvelles colonnes du tableau.
+### Syntaxe
+
+```r
+spread(data, key = variables , value = valeurs, fill = liste_valeurs)
+```
+
+### Exemple
+Reprenons notre exemple avant l'application du verbe **unite**.
+
+```r
+data %&gt;% spread(key = Ville, value = Note, fill = "nc")
+```
+
+```
+##       Nom   Pays Naples Rome Venise
+## 1   Anaïs Italie     nc    2      5
+## 2   Louis Italie      5    1      1
+## 3  Pierre Italie      3    4      4
+## 4 Vanessa Italie      2   nc      3
+```
+
+
+
+
+---
+class: left
+# Exemple récapitulatif 1/
+.right-column[![tab_chom](images/tab_chom.jpg)]On télecharge le fichier de la série des taux de chômage par département sur Insee.fr&lt;sup&gt;1&lt;/sup&gt;.
+
+On souhaite réaliser le tableau ci-contre, présent sur le tableau de bord de la conjoncture de Nouvelle-Aquitaine&lt;sup&gt;2&lt;/sup&gt;.
+.footnote[
+[1] https://www.insee.fr/fr/statistiques/series/102760732
+
+[2] https://www.insee.fr/fr/statistiques/2121832#alpc_0104
+]
+
+Les données, sont dans un tableau dont les deux premières colonnes sont le code et le libellé du département et les suivantes correspondent chacune à un trimestre.
+
+```r
+tx_chom &lt;- readxl::read_xls("data/tx_chom.xls")
+tx_chom[1:4,1:10]
+```
+
+```
+## # A tibble: 4 x 10
+##   Code  Libellé                 T1_1982 T2_1982 T3_1982 T4_1982 T1_1983 T2_1983 T3_1983 T4_1983
+##   &lt;chr&gt; &lt;chr&gt;                     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1 01    AIN                         3.6     3.7     3.8     4       4       4       4.2     4.4
+## 2 02    AISNE                       8.1     8.3     8.4     8.3     8.4     8.4     8.7     9.1
+## 3 03    ALLIER                      7       7.2     7.3     7.4     7.4     7.4     7.5     8  
+## 4 04    ALPES-DE-HAUTE-PROVENCE     5.2     5.4     5.5     5.8     5.9     5.9     6       6.4
+```
+
+
+---
+class:left
+# Exemple récapitulatif 2/
+
+On récupère le trimestre le plus récent, et on construit la liste des trimestres qui devront apparaitre dans notre tableau final.
+
+```r
+trim &lt;- as.numeric(str_sub(last(names(tx_chom)),2,2))
+ann &lt;- as.numeric(str_sub(last(names(tx_chom)),4,7))
+
+trimestres &lt;- c(
+  paste0("T", trim, "_", ann - 1),
+  paste0("T", 1 + ( trim + 2) %% 4, "_", ann),
+  paste0("T", trim, "_", ann)
+)
+
+trimestres
+```
+
+```
+## [1] "T3_2018" "T2_2019" "T3_2019"
+```
+
+On charge un table de zonages pour enrichir le tableau avec la région.
+
+
+```r
+load("data/zonages.Rda")
+tx_chom &lt;- tx_chom %&gt;% 
+  inner_join(dc_zonages %&gt;% distinct(dep, reg) , by = c("Code" = "dep")) %&gt;% 
+  inner_join(lreg, by = c("reg")) %&gt;% 
+  select(dep = Code, ldep = Libellé, Région = lreg, everything(), -reg)
+```
+
+
+```
+## # A tibble: 3 x 6
+##   dep   ldep   Région               T1_1982 T2_1982 T3_1982
+##   &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;                  &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1 01    AIN    Auvergne-Rhône-Alpes     3.6     3.7     3.8
+## 2 02    AISNE  Hauts-de-France          8.1     8.3     8.4
+## 3 03    ALLIER Auvergne-Rhône-Alpes     7       7.2     7.3
+```
+
+
+
+
+
+---
+class: inverse, center, middle
+# Les tableaux
+###Réalisation et mise en forme 
+
+![Le package flextable](images/flextable_collage.png)
+
+
+
+---
+class: inverse, center, middle
+# Les graphiques
+###Création, mise en forme et export
+![Le package ggplot](images/ggplot_collage.png)
+
+
+
+---
+# Prout
+
+Install the **xaringan** package from [Github](https://github.com/yihui/xaringan):
+
+
+```r
+devtools::install_github("yihui/xaringan")
+```
+
+--
+
+You are recommended to use the [RStudio IDE](https://www.rstudio.com/products/rstudio/), but you do not have to.
+
+- Create a new R Markdown document from the menu `File -&gt; New File -&gt; R Markdown -&gt; From Template -&gt; Ninja Presentation`;&lt;sup&gt;1&lt;/sup&gt;
+
+--
+
+- Click the `Knit` button to compile it;
+
+--
+
+- or use the [RStudio Addin](https://rstudio.github.io/rstudioaddins/)&lt;sup&gt;2&lt;/sup&gt; "Infinite Moon Reader" to live preview the slides (every time you update and save the Rmd document, the slides will be automatically reloaded in RStudio Viewer.
+
+.footnote[
+[1] 中文用户请看[这份教程](http://slides.yihui.name/xaringan/zh-CN.html)
+
+[2] See [#2](https://github.com/yihui/xaringan/issues/2) if you do not see the template or addin in RStudio.
+]
+
+---
+background-image: url(https://github.com/yihui/xaringan/releases/download/v0.0.2/karl-moustache.jpg)
+background-position: 50% 50%
+class: center, bottom, inverse
+
+# You only live once!
+
+---
+
+# Hello Ninja
+
+As a presentation à la con ninja, you certainly should not be satisfied by the "Hello World" example. You need to understand more about two things:
+
+1. The [remark.js](https://remarkjs.com) library;
+
+1. The **xaringan** package;
+
+Basically **xaringan** *injected* the chakra of R Markdown (minus Pandoc) into **remark.js**. The slides are rendered by remark.js in the web browser, and the Markdown source needed by remark.js is generated from R Markdown (**knitr**).
+
+---
+
+# remark.js
+
+You can see an introduction of remark.js from [its homepage](https://remarkjs.com). You should read the [remark.js Wiki](https://github.com/gnab/remark/wiki) at least once to know how to
+
+- create a new slide (Markdown syntax&lt;sup&gt;*&lt;/sup&gt; and slide properties);
+
+- format a slide (e.g. text alignment);
+
+- configure the slideshow;
+
+- and use the presentation (keyboard shortcuts).
+
+It is important to be familiar with remark.js before you can understand the options in **xaringan**.
+
+.footnote[[*] It is different with Pandoc's Markdown! It is limited but should be enough for presentation purposes. Come on... You do not need a slide for the Table of Contents! Well, the Markdown support in remark.js [may be improved](https://github.com/gnab/remark/issues/142) in the future.]
+
+---
+background-image: url(https://github.com/yihui/xaringan/releases/download/v0.0.2/karl-moustache.jpg)
+background-size: cover
+class: center, bottom, inverse
+
+# I was so happy to have discovered remark.js!
+
+---
+class: inverse, middle, center
+
+# Using xaringan
+
+---
+
+# xaringan
+
+Provides an R Markdown output format `xaringan::moon_reader` as a wrapper for remark.js, and you can use it in the YAML metadata, e.g.
+
+```yaml
+---
+title: "A Cool Presentation"
+output:
+  xaringan::moon_reader:
+    yolo: true
+    nature:
+      autoplay: 30000
+---
+```
+
+See the help page `?xaringan::moon_reader` for all possible options that you can use.
+
+---
+
+# remark.js vs xaringan
+
+Some differences between using remark.js (left) and using **xaringan** (right):
+
+.pull-left[
+1. Start with a boilerplate HTML file;
+
+1. Plain Markdown;
+
+1. Write JavaScript to autoplay slides;
+
+1. Manually configure MathJax;
+
+1. Highlight code with `*`;
+
+1. Edit Markdown source and refresh browser to see updated slides;
+]
+
+.pull-right[
+1. Start with an R Markdown document;
+
+1. R Markdown (can embed R/other code chunks);
+
+1. Provide an option `autoplay`;
+
+1. MathJax just works;&lt;sup&gt;*&lt;/sup&gt;
+
+1. Highlight code with `{{john}}`;
+
+1. The RStudio addin "Infinite Moon Reader" automatically refreshes slides on changes;
+]
+
+.footnote[[*] Not really. See next page.]
+
+---
+
+# Math Expressions
+
+You can write LaTeX math expressions inside a pair of dollar signs, e.g. &amp;#36;\alpha+\beta$ renders `\(\alpha+\beta\)`. You can use the display style with double dollar signs:
+
+```
+$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$
+```
+
+`$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$`
+
+Limitations:
+
+1. The source code of a LaTeX math expression must be in one line, unless it is inside a pair of double dollar signs, in which case the starting `$$` must appear in the very beginning of a line, followed immediately by a non-space character, and the ending `$$` must be at the end of a line, led by a non-space character;
+
+1. There should not be spaces after the opening `$` or before the closing `$`.
+
+1. Math does not work on the title slide (see [#61](https://github.com/yihui/xaringan/issues/61) for a workaround).
+
+---
+
+# R Code
+
+
+```r
+# a boring regression
+fit = lm(dist ~ 1 + speed, data = cars)
+coef(summary(fit))
+```
+
+```
+#               Estimate Std. Error   t value     Pr(&gt;|t|)
+# (Intercept) -17.579095  6.7584402 -2.601058 1.231882e-02
+# speed         3.932409  0.4155128  9.463990 1.489836e-12
+```
+
+```r
+dojutsu = c('地爆天星', '天照', '加具土命', '神威', '須佐能乎', '無限月読')
+grep('天', dojutsu, value = TRUE)
+```
+
+```
+# character(0)
+```
+
+---
+
+# R Plots
+
+
+```r
+par(mar = c(4, 4, 1, .1))
+plot(cars, pch = 19, col = 'darkgray', las = 1)
+abline(fit, lwd = 2)
+```
+
+![](r_avance_files/figure-html/cars-1.svg)&lt;!-- --&gt;
+
+---
+
+# Tables
+
+If you want to generate a table, make sure it is in the HTML format (instead of Markdown or other formats), e.g.,
+
+
+```r
+knitr::kable(head(iris), format = 'html')
+```
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; Sepal.Length &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Sepal.Width &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Petal.Length &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Petal.Width &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Species &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 5.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; setosa &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 4.9 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; setosa &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 4.7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; setosa &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 4.6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; setosa &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 5.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; setosa &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 5.4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.9 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.4 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; setosa &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+# HTML Widgets
+
+I have not thoroughly tested HTML widgets against **xaringan**. Some may work well, and some may not. It is a little tricky.
+
+Similarly, the Shiny mode (`runtime: shiny`) does not work. I might get these issues fixed in the future, but these are not of high priority to me. I never turn my presentation into a Shiny app. When I need to demonstrate more complicated examples, I just launch them separately. It is convenient to share slides with other people when they are plain HTML/JS applications.
+
+See the next page for two HTML widgets.
+
+---
+
+
+```r
+library(leaflet)
+leaflet() %&gt;% addTiles() %&gt;% setView(-93.65, 42.0285, zoom = 17)
+```
+
+<div id="htmlwidget-68191ab19bffee1e0666" style="width:100%;height:432px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-68191ab19bffee1e0666">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"http://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]}],"setView":[[42.0285,-93.65],17,[]]},"evals":[],"jsHooks":[]}</script>
+
+---
+
+
+```r
+DT::datatable(
+  head(iris, 10),
+  fillContainer = FALSE, options = list(pageLength = 8)
+)
+```
+
+<div id="htmlwidget-13977dbc004a0eb6466d" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-13977dbc004a0eb6466d">{"x":{"filter":"none","fillContainer":false,"data":[["1","2","3","4","5","6","7","8","9","10"],[5.1,4.9,4.7,4.6,5,5.4,4.6,5,4.4,4.9],[3.5,3,3.2,3.1,3.6,3.9,3.4,3.4,2.9,3.1],[1.4,1.4,1.3,1.5,1.4,1.7,1.4,1.5,1.4,1.5],[0.2,0.2,0.2,0.2,0.2,0.4,0.3,0.2,0.2,0.1],["setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Sepal.Length<\/th>\n      <th>Sepal.Width<\/th>\n      <th>Petal.Length<\/th>\n      <th>Petal.Width<\/th>\n      <th>Species<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":[1,2,3,4]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+
+---
+
+# Some Tips
+
+- When you use the "Infinite Moon Reader" addin in RStudio, your R session will be blocked by default. You can click the red button on the right of the console to stop serving the slides, or use the _daemonized_ mode so that it does not block your R session. To do the latter, you can set the option
+
+    ```r
+    options(servr.daemon = TRUE)
+    ```
+    
+    in your current R session, or in `~/.Rprofile` so that it is applied to all future R sessions. I do the latter by myself.
+    
+    To know more about the web server, see the [**servr**](https://github.com/yihui/servr) package.
+
+--
+
+- Do not forget to try the `yolo` option of `xaringan::moon_reader`.
+
+    ```yaml
+    output:
+      xaringan::moon_reader:
+        yolo: true
+    ```
+
+---
+
+# Some Tips
+
+- Slides can be automatically played if you set the `autoplay` option under `nature`, e.g. go to the next slide every 30 seconds in a lightning talk:
+
+    ```yaml
+    output:
+      xaringan::moon_reader:
+        nature:
+          autoplay: 30000
+    ```
+
+--
+
+- A countdown timer can be added to every page of the slides using the `countdown` option under `nature`, e.g. if you want to spend one minute on every page when you give the talk, you can set:
+
+    ```yaml
+    output:
+      xaringan::moon_reader:
+        nature:
+          countdown: 60000
+    ```
+
+    Then you will see a timer counting down from `01:00`, to `00:59`, `00:58`, ... When the time is out, the timer will continue but the time turns red.
+    
+---
+
+# Some Tips
+
+- The title slide is created automatically by **xaringan**, but it is just another remark.js slide added before your other slides.
+
+    The title slide is set to `class: center, middle, inverse, title-slide` by default. You can change the classes applied to the title slide with the `titleSlideClass` option of `nature` (`title-slide` is always applied).
+
+    ```yaml
+    output:
+      xaringan::moon_reader:
+        nature:
+          titleSlideClass: [top, left, inverse]
+    ```
+    
+--
+
+- If you'd like to create your own title slide, disable **xaringan**'s title slide with the `seal = FALSE` option of `moon_reader`.
+
+    ```yaml
+    output:
+      xaringan::moon_reader:
+        seal: false
+    ```
+
+---
+
+# Some Tips
+
+- There are several ways to build incremental slides. See [this presentation](https://slides.yihui.name/xaringan/incremental.html) for examples.
+
+- The option `highlightLines: true` of `nature` will highlight code lines that start with `*`, or are wrapped in `{{ }}`, or have trailing comments `#&lt;&lt;`;
+
+    ```yaml
+    output:
+      xaringan::moon_reader:
+        nature:
+          highlightLines: true
+    ```
+
+    See examples on the next page.
+
+---
+
+# Some Tips
+
+
+.pull-left[
+An example using a leading `*`:
+
+    ```r
+    if (TRUE) {
+    ** message("Very important!")
+    }
+    ```
+Output:
+```r
+if (TRUE) {
+* message("Very important!")
+}
+```
+
+This is invalid R code, so it is a plain fenced code block that is not executed.
+]
+
+.pull-right[
+An example using `{{}}`:
+
+````
+```{r tidy=FALSE}
+if (TRUE) {
+*{{ message("Very important!") }}
+}
+```
+````
+Output:
+
+```r
+if (TRUE) {
+* message("Very important!") 
+}
+```
+
+```
+## Very important!
+```
+
+It is valid R code so you can run it. Note that `{{}}` can wrap an R expression of multiple lines.
+]
+
+---
+
+# Some Tips
+
+An example of using the trailing comment `#&lt;&lt;` to highlight lines:
+
+````markdown
+```{r tidy=FALSE}
+library(ggplot2)
+ggplot(mtcars) + 
+  aes(mpg, disp) + 
+  geom_point() +   #&lt;&lt;
+  geom_smooth()    #&lt;&lt;
+```
+````
+
+Output:
+
+
+```r
+library(ggplot2)
+ggplot(mtcars) + 
+  aes(mpg, disp) + 
+* geom_point() +
+* geom_smooth()
+```
+
+---
+
+# Some Tips
+
+When you enable line-highlighting, you can also use the chunk option `highlight.output` to highlight specific lines of the text output from a code chunk. For example, `highlight.output = TRUE` means highlighting all lines, and `highlight.output = c(1, 3)` means highlighting the first and third line.
+
+````md
+```{r, highlight.output=c(1, 3)}
+head(iris)
+```
+````
+
+
+```
+*##   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+## 1          5.1         3.5          1.4         0.2  setosa
+*## 2          4.9         3.0          1.4         0.2  setosa
+## 3          4.7         3.2          1.3         0.2  setosa
+## 4          4.6         3.1          1.5         0.2  setosa
+## 5          5.0         3.6          1.4         0.2  setosa
+## 6          5.4         3.9          1.7         0.4  setosa
+```
+
+Question: what does `highlight.output = c(TRUE, FALSE)` mean? (Hint: think about R's recycling of vectors)
+
+---
+
+# Some Tips
+
+- To make slides work offline, you need to download a copy of remark.js in advance, because **xaringan** uses the online version by default (see the help page `?xaringan::moon_reader`).
+
+- You can use `xaringan::summon_remark()` to download the latest or a specified version of remark.js. By default, it is downloaded to `libs/remark-latest.min.js`.
+
+- Then change the `chakra` option in YAML to point to this file, e.g.
+
+    ```yaml
+    output:
+      xaringan::moon_reader:
+        chakra: libs/remark-latest.min.js
+    ```
+
+- If you used Google fonts in slides (the default theme uses _Yanone Kaffeesatz_, _Droid Serif_, and _Source Code Pro_), they won't work offline unless you download or install them locally. The Heroku app [google-webfonts-helper](https://google-webfonts-helper.herokuapp.com/fonts) can help you download fonts and generate the necessary CSS.
+
+---
+
+# Macros
+
+- remark.js [allows users to define custom macros](https://github.com/yihui/xaringan/issues/80) (JS functions) that can be applied to Markdown text using the syntax `![:macroName arg1, arg2, ...]` or `![:macroName arg1, arg2, ...](this)`. For example, before remark.js initializes the slides, you can define a macro named `scale`:
+
+    ```js
+    remark.macros.scale = function (percentage) {
+      var url = this;
+      return '&lt;img src="' + url + '" style="width: ' + percentage + '" /&gt;';
+    };
+    ```
+
+    Then the Markdown text
+
+    ```markdown
+    ![:scale 50%](image.jpg)
+    ```
+
+    will be translated to
+    
+    ```html
+    &lt;img src="image.jpg" style="width: 50%" /&gt;
+    ```
+
+---
+
+# Macros (continued)
+
+- To insert macros in **xaringan** slides, you can use the option `beforeInit` under the option `nature`, e.g.,
+
+    ```yaml
+    output:
+      xaringan::moon_reader:
+        nature:
+          beforeInit: "macros.js"
+    ```
+
+    You save your remark.js macros in the file `macros.js`.
+
+- The `beforeInit` option can be used to insert arbitrary JS code before `remark.create()`. Inserting macros is just one of its possible applications.
+
+---
+
+# CSS
+
+Among all options in `xaringan::moon_reader`, the most challenging but perhaps also the most rewarding one is `css`, because it allows you to customize the appearance of your slides using any CSS rules or hacks you know.
+
+You can see the default CSS file [here](https://github.com/yihui/xaringan/blob/master/inst/rmarkdown/templates/xaringan/resources/default.css). You can completely replace it with your own CSS files, or define new rules to override the default. See the help page `?xaringan::moon_reader` for more information.
+
+---
+
+# CSS
+
+For example, suppose you want to change the font for code from the default "Source Code Pro" to "Ubuntu Mono". You can create a CSS file named, say, `ubuntu-mono.css`:
+
+```css
+@import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+.remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+```
+
+Then set the `css` option in the YAML metadata:
+
+```yaml
+output:
+  xaringan::moon_reader:
+    css: ["default", "ubuntu-mono.css"]
+```
+
+Here I assume `ubuntu-mono.css` is under the same directory as your Rmd.
+
+See [yihui/xaringan#83](https://github.com/yihui/xaringan/issues/83) for an example of using the [Fira Code](https://github.com/tonsky/FiraCode) font, which supports ligatures in program code.
+
+---
+
+# Themes
+
+Don't want to learn CSS? Okay, you can use some user-contributed themes. A theme typically consists of two CSS files `foo.css` and `foo-fonts.css`, where `foo` is the theme name. Below are some existing themes:
+
+
+```r
+names(xaringan:::list_css())
+```
+
+```
+##  [1] "chocolate-fonts"  "chocolate"        "default-fonts"    "default"          "duke-blue"        "fc-fonts"         "fc"               "hygge-duke"       "hygge"           
+## [10] "kunoichi"         "lucy-fonts"       "lucy"             "metropolis-fonts" "metropolis"       "middlebury-fonts" "middlebury"       "ninjutsu"         "rladies-fonts"   
+## [19] "rladies"          "robot-fonts"      "robot"            "rutgers-fonts"    "rutgers"          "shinobi"          "tamu-fonts"       "tamu"             "uo-fonts"        
+## [28] "uo"               "uol-fonts"        "uol"
+```
+
+---
+
+# Themes
+
+To use a theme, you can specify the `css` option as an array of CSS filenames (without the `.css` extensions), e.g.,
+
+```yaml
+output:
+  xaringan::moon_reader:
+    css: [default, metropolis, metropolis-fonts]
+```
+
+If you want to contribute a theme to **xaringan**, please read [this blog post](https://yihui.name/en/2017/10/xaringan-themes).
+
+---
+class: inverse, middle, center
+background-image: url(https://upload.wikimedia.org/wikipedia/commons/3/39/Naruto_Shiki_Fujin.svg)
+background-size: contain
+
+# Naruto
+
+---
+background-image: url(https://upload.wikimedia.org/wikipedia/commons/b/be/Sharingan_triple.svg)
+background-size: 100px
+background-position: 90% 8%
+
+# Sharingan
+
+The R package name **xaringan** was derived&lt;sup&gt;1&lt;/sup&gt; from **Sharingan**, a dōjutsu in the Japanese anime _Naruto_ with two abilities:
+
+- the "Eye of Insight"
+
+- the "Eye of Hypnotism"
+
+I think a presentation is basically a way to communicate insights to the audience, and a great presentation may even "hypnotize" the audience.&lt;sup&gt;2,3&lt;/sup&gt;
+
+.footnote[
+[1] In Chinese, the pronounciation of _X_ is _Sh_ /ʃ/ (as in _shrimp_). Now you should have a better idea of how to pronounce my last name _Xie_.
+
+[2] By comparison, bad presentations only put the audience to sleep.
+
+[3] Personally I find that setting background images for slides is a killer feature of remark.js. It is an effective way to bring visual impact into your presentations.
+]
+
+---
+
+# Naruto terminology
+
+The **xaringan** package borrowed a few terms from Naruto, such as
+
+- [Sharingan](http://naruto.wikia.com/wiki/Sharingan) (写輪眼; the package name)
+
+- The [moon reader](http://naruto.wikia.com/wiki/Moon_Reader) (月読; an attractive R Markdown output format)
+
+- [Chakra](http://naruto.wikia.com/wiki/Chakra) (查克拉; the path to the remark.js library, which is the power to drive the presentation)
+
+- [Nature transformation](http://naruto.wikia.com/wiki/Nature_Transformation) (性質変化; transform the chakra by setting different options)
+
+- The [infinite moon reader](http://naruto.wikia.com/wiki/Infinite_Tsukuyomi) (無限月読; start a local web server to continuously serve your slides)
+
+- The [summoning technique](http://naruto.wikia.com/wiki/Summoning_Technique) (download remark.js from the web)
+
+You can click the links to know more about them if you want. The jutsu "Moon Reader" may seem a little evil, but that does not mean your slides are evil.
+
+---
+
+class: center
+
+# Hand seals (印)
+
+Press `h` or `?` to see the possible ninjutsu you can use in remark.js.
+
+![](https://upload.wikimedia.org/wikipedia/commons/7/7e/Mudra-Naruto-KageBunshin.svg)
+
+---
+
+class: center, middle
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+
+The chakra comes from [remark.js](https://remarkjs.com), [**knitr**](http://yihui.name/knitr), and [R Markdown](https://rmarkdown.rstudio.com).
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
