@@ -14,6 +14,8 @@ install_and_load(c("tidyverse", "forcats", "extrafont", "formattable", "xtable",
 # setwd(cur_dir)
 # rm(foo)
 # getwd()
+getwd()
+
 load("Diaporama/data/zonages.Rda")
 data <- read.csv2("Diaporama/data/valeurs_trimestrielles.csv", encoding = "UTF-8", stringsAsFactors = F)
 
