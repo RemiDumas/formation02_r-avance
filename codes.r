@@ -3,7 +3,7 @@ install_and_load <- function(P) {
   
   if (length(Pi)>0) install.packages(Pi)
   for(i in P) library(i,character.only = TRUE)
-}
+}#
 
 install_and_load(c("tidyverse", "forcats", "extrafont", "formattable", "xtable", "knitr", "ggrepel",
                    "writexl"))
