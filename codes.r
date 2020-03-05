@@ -13,8 +13,9 @@ foo <- str_split(cur_path, "/")
 cur_dir <- str_sub(cur_path, 1, str_locate(cur_path,last(foo[[1]]))-2)
 setwd(cur_dir)
 rm(foo)
-load("Kit Formation R avancé/Diaporama/data/zonages.Rda")
-data <- read.csv2("Kit Formation R avancé/Diaporama/data/valeurs_trimestrielles.csv", encoding = "UTF-8", stringsAsFactors = F)
+getwd()
+load("Diaporama/data/zonages.Rda")
+data <- read.csv2("Diaporama/data/valeurs_trimestrielles.csv", encoding = "UTF-8", stringsAsFactors = F)
 
 emploi <- data %>% select(-Période, -idBank) %>% filter(Libellé != "Codes") %>% 
   separate(Libellé, c("Type", "Secteur", "Territoire"), sep = " - ") 
