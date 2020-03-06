@@ -1,5 +1,6 @@
 # Formation R-avancé
 Ordonner ses données et les visualiser (12H)
+![tidy_tiles](images/tidy_tiles.png)
 
 [Diaporama de la formation](https://remidumas.github.io/formationR02_r-avance/r_avance.html)
 
@@ -7,9 +8,7 @@ Ordonner ses données et les visualiser (12H)
 (bientôt)
 
 # Contenu de la formation
-[Télechargement](https://github.com/RemiDumas/formationR02_r-avance/raw/master/docs/R%20avanc%C3%A9%20-%20Programme%20de%20formation.odt)
-
-[Télecharger le programme de formation](../blob/master/R%20avanc%C3%A9%20-%20Programme%20de%20formation.odt)
+[Télecharger le programme de formation](https://github.com/RemiDumas/formationR02_r-avance/raw/master/docs/R%20avanc%C3%A9%20-%20Programme%20de%20formation.odt)
 
 ## 01 - Pré-requis
 - Charger des données au format R natif et imports (SAS, CSV, ODS, XLS)
