@@ -1,6 +1,14 @@
 # Formation R-avancé
 Ordonner ses données et les visualiser (12H)
 
+Diaporama de la formation(https://remidumas.github.io/formationR02_r-avance/r_avance.html)
+
+# Exercices
+(bientôt)
+
+# Contenu de la formation
+Télechargement(https://github.com/RemiDumas/formationR02_r-avance/raw/master/docs/R%20avanc%C3%A9%20-%20Programme%20de%20formation.odt)
+
 ## 01 - Pré-requis
 - Charger des données au format R natif et imports (SAS, CSV, ODS, XLS)
 - Enregistrer des données au format R natif et exports (SAS, CSV, ODS, XLS)
@@ -33,3 +41,4 @@ Ordonner ses données et les visualiser (12H)
 - Les couches de représentation: geom_boxplot, geom_point, geom_bar, geom_text, geom_label, geom_density, geom_line, geom_smooth, geom_abline
 - La mise en forme des couches
 - Les éléments: légende, axes, titres
+
