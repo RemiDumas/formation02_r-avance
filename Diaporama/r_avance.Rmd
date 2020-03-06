@@ -100,9 +100,8 @@ Problème: Lorsque les colonnes changeront, il faudra réecrire la formule de ca
 class: inverse, center, middle
 # Pré-requis
 ###Importer et traiter les données
+
 ![Le cycle des données](images/data_cycle.png)
-
-
 
 ---
 class: left
@@ -566,7 +565,7 @@ Les extensions du **tidyverse** comme *dplyr* ou *ggplot2* utilisent des donnée
 Prenons un exemple avec les données suivantes, qui indique la population de trois pays pour quatre années différentes : 
 ### Les données non brutes
 ```{r data, echo= F}
-pop_mess <- readRDS(file = "pop_mess.rds")
+pop_mess <- readRDS(file = "data/pop_mess.rds")
 kable(pop_mess) %>% kable_styling(font_size = "12")
 ```
 Les années sont en colonne, ce qui signifie que chaque année est un "indicateur" (une variable). Or, pour représenter une variable, il faut qu'elle soit relative à des "modalités", chaque pays représentant une "série" (une courbe différente). 
@@ -614,7 +613,7 @@ class: left
 Le tableau suivant contient les valeurs des populations et des espérances de vie pour 2002 et 2007. En voici les 10 premières lignes: 
 
 ```{r gapmind_messy, echo=F}
-gapmind_messy <- readRDS(file = "gapmind_mess.rds") %>% mutate_if(is.factor, as.character)
+gapmind_messy <- readRDS(file = "data/gapmind_mess.rds") %>% mutate_if(is.factor, as.character)
 gapmind_messy %>% head(10) %>% kable(format = "html") %>% kable_styling(font_size = "12")
 ```
 
